@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource{
     @IBOutlet weak var table: UITableView!
-    var userInfo:[[String]] = [];
+    var myDatas = [[[String:Any]]]();
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -45,8 +45,8 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
             //資料
             cell.imgState.image = UIImage(named: "img_warning.png");
             cell.lblTitle.text = "警報器現況";
-            if self.userInfo.isEmpty == false {
-                cell.lblDate.text = self.userInfo[0][0] ;
+            if !self.myDatas.isEmpty {
+                cell.lblDate.text = self.myDatas[0][0]["群組"] as? String ;
             }
             else{
                 cell.lblDate.text = "假資料......";
@@ -61,7 +61,7 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
     }
     
     func getUserSituationFromApi(){
-        let strURL: String = "http://104feixincm.iii.wpj.tw/maf/Event/se?fToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjAwMCIsIkFjYyI6InBlYW51dCIsImV4cCI6MTg2NjE5OTUxN30.OaXzewi49pqgwuASci6iB-cTbTuZsMfWVRpgqzkJSQk"
+        let strURL: String = "http://104feixincm.iii.wpj.tw/maf/Event/se?fToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjAwMCIsIkFjYyI6InBlYW51dCIsImV4cCI6MTg2NjIwNjg2MX0.Pq8588KIGd-csaOgk9lL28xgXSOq1955QzsGQDUhZuc"
         
         let myUrl = URL(string: strURL);
         
@@ -81,15 +81,13 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
                 
                 if statusCode == 200 {
                     do {
-//                        let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableLeaves) ;
+                        let result = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableLeaves) as! [[[String:Any]]];
+                        print(result);
+
+
+                        self.myDatas = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableLeaves) as! [[[String:Any]]]
                         
-                        let json = [["目錄": "居家安全","群組": "A棟一樓之一","感應器名稱": "火災警報器", "時間": "2018-08-22 18:31:27"]]
-                        
-                        print(json);
-//
-//                        self.userInfo = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableLeaves) as! [[String]]
-                        
-//                        print(self.userInfo);
+                        print(self.myDatas);
                         
                         DispatchQueue.main.async {
                             self.table.reloadData();
